@@ -18,6 +18,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   } catch (error) {
     console.error("Error handling command:", error);
+    const errorMessage = "❌ Ocurrió un error al procesar el comando.";
+    if (interaction.deferred || interaction.replied) {
+      await interaction.editReply(errorMessage);
+    } else {
+      await interaction.reply(errorMessage);
+    }
   }
 });
 

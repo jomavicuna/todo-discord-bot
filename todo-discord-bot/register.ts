@@ -6,7 +6,7 @@ const CLIENT_ID = "1433136085579600076";
 const commands = [
   new SlashCommandBuilder()
     .setName("todo")
-    .setDescription("Muestra las 10 tareas pendientes más próximas"),
+    .setDescription("Muestra las 20 tareas pendientes más próximas"),
 ].map((cmd) => cmd.toJSON());
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN!);
