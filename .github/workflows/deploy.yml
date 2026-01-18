@@ -40,7 +40,7 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}/aarch64-todo-discord-bot:${{ github.sha }}
             ghcr.io/${{ github.repository }}/aarch64-todo-discord-bot:latest
-            ghcr.io/${{ github.repository }}/aarch64-todo-discord-bot:1.0.0
+            ghcr.io/${{ github.repository }}/aarch64-todo-discord-bot:1.1.0
 
       - name: Build and push amd64
         uses: docker/build-push-action@v5
@@ -53,4 +53,4 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}/amd64-todo-discord-bot:${{ github.sha }}
             ghcr.io/${{ github.repository }}/amd64-todo-discord-bot:latest
-            ghcr.io/${{ github.repository }}/amd64-todo-discord-bot:1.0.0
+            ghcr.io/${{ github.repository }}/amd64-todo-discord-bot:1.1.0
