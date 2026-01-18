@@ -17,45 +17,14 @@ function isOverdue(dateStr: string): boolean {
   return dueDate < today;
 }
 
-function groupByUser(todos: TodoWithUser[]): Map<string, TodoWithUser[]> {
-  const groups = new Map<string, TodoWithUser[]>();
-
-  for (const todo of todos) {
-    const userName = todo.user?.full_name ?? "Sin asignar";
-    const existing = groups.get(userName) ?? [];
-    existing.push(todo);
-    groups.set(userName, existing);
-  }
-
-  return groups;
-}
-
-function formatGroupedTodos(todos: TodoWithUser[]): string {
-  const grouped = groupByUser(todos);
-  const lines: string[] = [];
-
-  // Sort: named users first, "Sin asignar" last
-  const sortedGroups = [...grouped.entries()].sort(([a], [b]) => {
-    if (a === "Sin asignar") return 1;
-    if (b === "Sin asignar") return -1;
-    return a.localeCompare(b);
-  });
-
-  for (const [userName, userTodos] of sortedGroups) {
-    const icon = userName === "Sin asignar" ? "📭" : "👤";
-    lines.push(`${icon} **${userName}**`);
-
-    userTodos.forEach((todo, index) => {
+function formatTodos(todos: TodoWithUser[]): string {
+  return todos
+    .map((todo, index) => {
       const emoji = isOverdue(todo.due_date!) ? "🔴" : "📌";
       const date = formatDate(todo.due_date!);
-      lines.push(`   ${emoji} ${index + 1}. ${todo.title}`);
-      lines.push(`      └ ${date}`);
-    });
-
-    lines.push(""); // Empty line between groups
-  }
-
-  return lines.join("\n").trim();
+      return `${emoji} ${index + 1}. ${todo.title}\n   └ ${date}`;
+    })
+    .join("\n");
 }
 
 export async function handleTodoCommand(
@@ -72,7 +41,7 @@ export async function handleTodoCommand(
 
   const embed = new EmbedBuilder()
     .setTitle("📋 Tareas pendientes")
-    .setDescription(formatGroupedTodos(todos))
+    .setDescription(formatTodos(todos))
     .setColor(0x5865f2)
     .setFooter({ text: `${todos.length} tareas` })
     .setTimestamp();
