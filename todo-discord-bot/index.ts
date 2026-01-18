@@ -12,8 +12,12 @@ client.once(Events.ClientReady, (c) => {
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
-  if (interaction.commandName === "todo") {
-    await handleTodoCommand(interaction);
+  try {
+    if (interaction.commandName === "todo") {
+      await handleTodoCommand(interaction);
+    }
+  } catch (error) {
+    console.error("Error handling command:", error);
   }
 });
 
