@@ -1,5 +1,6 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
 import { handleTodoCommand } from "./commands/todo";
+import { handleStatsCommand } from "./commands/stats";
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
@@ -15,6 +16,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
   try {
     if (interaction.commandName === "todo") {
       await handleTodoCommand(interaction);
+    } else if (interaction.commandName === "stats") {
+      await handleStatsCommand(interaction);
     }
   } catch (error) {
     console.error("Error handling command:", error);
