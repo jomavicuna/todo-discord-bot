@@ -1,8 +1,8 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-# Install bun
-RUN apk add --no-cache curl bash unzip && \
+# Install bun and required dependencies
+RUN apk add --no-cache curl bash unzip libstdc++ libgcc && \
     curl -fsSL https://bun.sh/install | bash && \
     ln -s /root/.bun/bin/bun /usr/local/bin/bun
 
