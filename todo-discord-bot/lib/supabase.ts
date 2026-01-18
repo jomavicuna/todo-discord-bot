@@ -5,6 +5,11 @@ const supabaseKey = process.env.SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+export interface User {
+  id: string;
+  full_name: string | null;
+}
+
 export interface Todo {
   id: string;
   title: string;
@@ -13,10 +18,14 @@ export interface Todo {
   is_completed: boolean;
 }
 
-export async function getUpcomingTodos(limit = 10): Promise<Todo[]> {
+export interface TodoWithUser extends Todo {
+  user: User | null;
+}
+
+export async function getUpcomingTodos(limit = 10): Promise<TodoWithUser[]> {
   const { data, error } = await supabase
     .from("todo")
-    .select("id, title, due_date, description, is_completed")
+    .select("id, title, due_date, description, is_completed, user:users(id, full_name)")
     .eq("is_completed", false)
     .not("due_date", "is", null)
     .order("due_date", { ascending: true })
@@ -27,5 +36,5 @@ export async function getUpcomingTodos(limit = 10): Promise<Todo[]> {
     return [];
   }
 
-  return data ?? [];
+  return (data ?? []) as TodoWithUser[];
 }

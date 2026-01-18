@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
-import { getUpcomingTodos, type Todo } from "../lib/supabase";
+import { getUpcomingTodos, type TodoWithUser } from "../lib/supabase";
 
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr + "T00:00:00");
@@ -17,10 +17,45 @@ function isOverdue(dateStr: string): boolean {
   return dueDate < today;
 }
 
-function formatTodoLine(todo: Todo, index: number): string {
-  const emoji = isOverdue(todo.due_date!) ? "🔴" : "📌";
-  const date = formatDate(todo.due_date!);
-  return `${emoji} **${index + 1}.** ${todo.title}\n   └ ${date}`;
+function groupByUser(todos: TodoWithUser[]): Map<string, TodoWithUser[]> {
+  const groups = new Map<string, TodoWithUser[]>();
+
+  for (const todo of todos) {
+    const userName = todo.user?.full_name ?? "Sin asignar";
+    const existing = groups.get(userName) ?? [];
+    existing.push(todo);
+    groups.set(userName, existing);
+  }
+
+  return groups;
+}
+
+function formatGroupedTodos(todos: TodoWithUser[]): string {
+  const grouped = groupByUser(todos);
+  const lines: string[] = [];
+
+  // Sort: named users first, "Sin asignar" last
+  const sortedGroups = [...grouped.entries()].sort(([a], [b]) => {
+    if (a === "Sin asignar") return 1;
+    if (b === "Sin asignar") return -1;
+    return a.localeCompare(b);
+  });
+
+  for (const [userName, userTodos] of sortedGroups) {
+    const icon = userName === "Sin asignar" ? "📭" : "👤";
+    lines.push(`${icon} **${userName}**`);
+
+    userTodos.forEach((todo, index) => {
+      const emoji = isOverdue(todo.due_date!) ? "🔴" : "📌";
+      const date = formatDate(todo.due_date!);
+      lines.push(`   ${emoji} ${index + 1}. ${todo.title}`);
+      lines.push(`      └ ${date}`);
+    });
+
+    lines.push(""); // Empty line between groups
+  }
+
+  return lines.join("\n").trim();
 }
 
 export async function handleTodoCommand(
@@ -28,16 +63,16 @@ export async function handleTodoCommand(
 ): Promise<void> {
   await interaction.deferReply();
 
-  const todos = await getUpcomingTodos(10);
+  const todos = await getUpcomingTodos(20);
 
   if (todos.length === 0) {
-    await interaction.editReply("No hay tareas pendientes con fecha.");
+    await interaction.editReply("📭 No hay tareas pendientes con fecha.");
     return;
   }
 
   const embed = new EmbedBuilder()
-    .setTitle("Tareas pendientes")
-    .setDescription(todos.map((t, i) => formatTodoLine(t, i)).join("\n\n"))
+    .setTitle("📋 Tareas pendientes")
+    .setDescription(formatGroupedTodos(todos))
     .setColor(0x5865f2)
     .setFooter({ text: `${todos.length} tareas` })
     .setTimestamp();
