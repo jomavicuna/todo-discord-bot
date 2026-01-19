@@ -1,13 +1,15 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
 import { handleTodoCommand } from "./commands/todo";
 import { handleStatsCommand } from "./commands/stats";
+import { loadThreadCache, isThreadTracked, updateThreadActivity } from "./lib/supabase";
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
 
-client.once(Events.ClientReady, (c) => {
+client.once(Events.ClientReady, async (c) => {
   console.log(`Bot listo como ${c.user.tag}`);
+  await loadThreadCache();
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -27,6 +29,20 @@ client.on(Events.InteractionCreate, async (interaction) => {
     } else {
       await interaction.reply(errorMessage);
     }
+  }
+});
+
+// Track activity in todo threads
+client.on(Events.MessageCreate, async (message) => {
+  // Ignore bots
+  if (message.author.bot) return;
+
+  // Only process threads
+  if (!message.channel.isThread()) return;
+
+  // Check if this thread is tracked
+  if (isThreadTracked(message.channel.id)) {
+    await updateThreadActivity(message.channel.id);
   }
 });
 

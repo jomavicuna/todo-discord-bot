@@ -59,3 +59,54 @@ export async function getTodosByDiscordUser(
 
   return (data ?? []) as TodoWithUser[];
 }
+
+// ============================================
+// Thread Tracking
+// ============================================
+
+export interface TodoThread {
+  id: string;
+  todo_id: string;
+  discord_thread_id: string;
+  created_at: string;
+  last_activity_at: string;
+}
+
+// In-memory cache for tracked thread IDs
+let trackedThreadIds: Set<string> = new Set();
+let cacheLoadedAt: number = 0;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+export async function loadThreadCache(): Promise<void> {
+  const { data, error } = await supabase
+    .from("todo_threads")
+    .select("discord_thread_id");
+
+  if (error) {
+    console.error("Error loading thread cache:", error);
+    return;
+  }
+
+  trackedThreadIds = new Set(data?.map((t) => t.discord_thread_id) ?? []);
+  cacheLoadedAt = Date.now();
+  console.log(`Thread cache loaded: ${trackedThreadIds.size} threads`);
+}
+
+export function isThreadTracked(threadId: string): boolean {
+  // Refresh cache if TTL expired
+  if (Date.now() - cacheLoadedAt > CACHE_TTL_MS) {
+    loadThreadCache(); // Fire and forget, use stale cache for this check
+  }
+  return trackedThreadIds.has(threadId);
+}
+
+export async function updateThreadActivity(threadId: string): Promise<void> {
+  const { error } = await supabase
+    .from("todo_threads")
+    .update({ last_activity_at: new Date().toISOString() })
+    .eq("discord_thread_id", threadId);
+
+  if (error) {
+    console.error("Error updating thread activity:", error);
+  }
+}
