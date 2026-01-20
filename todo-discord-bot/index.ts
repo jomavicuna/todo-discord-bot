@@ -1,6 +1,7 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
 import { handleTodoCommand } from "./commands/todo";
 import { handleStatsCommand } from "./commands/stats";
+import { handleAskCommand } from "./commands/ask";
 import { loadThreadCache, isThreadTracked, updateThreadActivity } from "./lib/supabase";
 
 const client = new Client({
@@ -20,6 +21,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
       await handleTodoCommand(interaction);
     } else if (interaction.commandName === "stats") {
       await handleStatsCommand(interaction);
+    } else if (interaction.commandName === "ask") {
+      await handleAskCommand(interaction);
     }
   } catch (error) {
     console.error("Error handling command:", error);

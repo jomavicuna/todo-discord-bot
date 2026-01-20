@@ -7,6 +7,15 @@ const commands = [
   new SlashCommandBuilder()
     .setName("stats")
     .setDescription("Muestra tus tareas pendientes"),
+  new SlashCommandBuilder()
+    .setName("ask")
+    .setDescription("Pregunta algo sobre tus tareas usando IA")
+    .addStringOption((option) =>
+      option
+        .setName("pregunta")
+        .setDescription("Tu pregunta")
+        .setRequired(true)
+    ),
 ].map((command) => command.toJSON());
 
 const token = process.env.DISCORD_TOKEN!;
@@ -21,7 +30,7 @@ const rest = new REST({ version: "10" }).setToken(token);
     await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
       body: commands,
     });
-    console.log("✓ Comandos registrados: /todo, /stats");
+    console.log("✓ Comandos registrados: /todo, /stats, /ask");
   } catch (error) {
     console.error("Error:", error);
   }
