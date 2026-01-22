@@ -1,21 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
-import { getUpcomingTodos, type TodoWithUser } from "../lib/supabase";
-
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr + "T00:00:00");
-  return date.toLocaleDateString("es-PE", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-  });
-}
-
-function isOverdue(dateStr: string): boolean {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const dueDate = new Date(dateStr + "T00:00:00");
-  return dueDate < today;
-}
+import { formatDate, isOverdue, type TodoWithUser } from "@jomavicuna/todo-shared";
+import { getUpcomingTodos } from "../lib/supabase";
 
 function formatTodos(todos: TodoWithUser[]): string {
   return todos

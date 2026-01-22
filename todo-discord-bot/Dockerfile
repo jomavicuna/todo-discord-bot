@@ -8,9 +8,12 @@ RUN apk add --no-cache curl bash unzip libstdc++ libgcc && \
 
 WORKDIR /app
 
-# Copy and install dependencies
-COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile --production
+# Configure GitHub Packages auth for @jomavicuna scope
+ARG GITHUB_TOKEN
+COPY package.json bun.lock .npmrc ./
+RUN echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> .npmrc && \
+    bun install --frozen-lockfile --production && \
+    rm -f .npmrc
 
 # Copy source files
 COPY . .

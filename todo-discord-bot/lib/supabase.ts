@@ -1,27 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
+import type { TodoWithUser, TodoThread } from "@jomavicuna/todo-shared";
 
 const supabaseUrl = process.env.SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
-export interface User {
-  id: string;
-  full_name: string | null;
-  discord_user_id: string | null;
-}
-
-export interface Todo {
-  id: string;
-  title: string;
-  due_date: string | null;
-  description: string | null;
-  is_completed: boolean;
-}
-
-export interface TodoWithUser extends Todo {
-  user: User | null;
-}
+// Re-export types from shared package
+export type { User, Todo, TodoWithUser, TodoThread } from "@jomavicuna/todo-shared";
 
 export async function getUpcomingTodos(limit = 10): Promise<TodoWithUser[]> {
   const { data, error } = await supabase
@@ -63,14 +49,6 @@ export async function getTodosByDiscordUser(
 // ============================================
 // Thread Tracking
 // ============================================
-
-export interface TodoThread {
-  id: string;
-  todo_id: string;
-  discord_thread_id: string;
-  created_at: string;
-  last_activity_at: string;
-}
 
 // In-memory cache for tracked thread IDs
 let trackedThreadIds: Set<string> = new Set();
