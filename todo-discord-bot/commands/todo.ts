@@ -6,8 +6,19 @@ function formatTodos(todos: TodoWithUser[]): string {
   return todos
     .map((todo, index) => {
       const emoji = isOverdue(todo.due_date!) ? "🔴" : "📌";
-      const date = formatDate(todo.due_date!);
-      return `${emoji} ${index + 1}. ${todo.title}\n   └ ${date}`;
+      const dueDate = formatDate(todo.due_date!);
+
+      // Build date line with work period if available
+      let dateLine = "";
+      if (todo.start_date && todo.end_date) {
+        dateLine = `${formatDate(todo.start_date)} → ${formatDate(todo.end_date)} | vence ${dueDate}`;
+      } else if (todo.start_date) {
+        dateLine = `desde ${formatDate(todo.start_date)} | vence ${dueDate}`;
+      } else {
+        dateLine = dueDate;
+      }
+
+      return `${emoji} ${index + 1}. ${todo.title}\n   └ ${dateLine}`;
     })
     .join("\n");
 }

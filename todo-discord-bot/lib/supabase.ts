@@ -12,7 +12,7 @@ export type { User, Todo, TodoWithUser, TodoThread } from "@jomavicuna/todo-shar
 export async function getUpcomingTodos(limit = 10): Promise<TodoWithUser[]> {
   const { data, error } = await supabase
     .from("todo")
-    .select("id, title, due_date, description, is_completed, user:users(id, full_name)")
+    .select("id, title, due_date, start_date, end_date, description, is_completed, user:users(id, full_name)")
     .eq("is_completed", false)
     .not("due_date", "is", null)
     .order("due_date", { ascending: true })
@@ -32,7 +32,7 @@ export async function getTodosByDiscordUser(
 ): Promise<TodoWithUser[]> {
   const { data, error } = await supabase
     .from("todo")
-    .select("id, title, due_date, description, is_completed, user:users!inner(id, full_name, discord_user_id)")
+    .select("id, title, due_date, start_date, end_date, description, is_completed, user:users!inner(id, full_name, discord_user_id)")
     .eq("user.discord_user_id", discordUserId)
     .eq("is_completed", false)
     .order("due_date", { ascending: true, nullsFirst: false })
