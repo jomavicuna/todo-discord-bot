@@ -6,7 +6,7 @@
       "name": "todo-discord-bot",
       "dependencies": {
         "@jomavicuna/todo-shared": "^1.0.0",
-        "@supabase/supabase-js": "^2.39.0",
+        "@supabase/supabase-js": "^2.90.1",
         "discord.js": "^14.14.1",
       },
     },

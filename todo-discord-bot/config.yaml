@@ -1,5 +1,5 @@
 name: Todo Discord Bot
-version: "1.10.1"
+version: "1.10.2"
 slug: todo-discord-bot
 description: Discord bot for managing todos via slash commands
 url: https://github.com/jomavicuna/todo-discord-bot
