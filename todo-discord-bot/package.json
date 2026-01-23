@@ -7,8 +7,8 @@
     "register": "bun run register-commands.ts"
   },
   "dependencies": {
-    "@jomavicuna/todo-shared": "^1.0.0",
-    "@supabase/supabase-js": "^2.39.0",
+    "@jomavicuna/todo-shared": "^1.2.0",
+    "@supabase/supabase-js": "^2.90.1",
     "discord.js": "^14.14.1"
   }
 }
