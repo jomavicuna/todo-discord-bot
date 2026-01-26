@@ -45,7 +45,7 @@ client.on(Events.MessageCreate, async (message) => {
 
   // Check if this thread is tracked
   if (isThreadTracked(message.channel.id)) {
-    await updateThreadActivity(message.channel.id);
+    await updateThreadActivity(message.channel.id, message.author.id);
   }
 });
 

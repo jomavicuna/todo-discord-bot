@@ -78,10 +78,13 @@ export function isThreadTracked(threadId: string): boolean {
   return trackedThreadIds.has(threadId);
 }
 
-export async function updateThreadActivity(threadId: string): Promise<void> {
+export async function updateThreadActivity(threadId: string, authorId: string): Promise<void> {
   const { error } = await supabase
     .from("todo_threads")
-    .update({ last_activity_at: new Date().toISOString() })
+    .update({
+      last_activity_at: new Date().toISOString(),
+      last_message_by_discord_id: authorId
+    })
     .eq("discord_thread_id", threadId);
 
   if (error) {
