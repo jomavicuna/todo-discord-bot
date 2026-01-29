@@ -44,13 +44,11 @@ bot/
 ## Stack
 - Runtime: Bun
 - Discord: discord.js
-- Database: Supabase (project: `bqchuxhrbbikkoibdtsp`)
+- Database: Supabase
 - Shared Package: `@jomavicuna/todo-shared` (GitHub Packages)
 - Deploy: GitHub Actions → ghcr.io → Home Assistant
 
-## IDs Discord
-- **Client ID:** `1433136085579600076`
-- **Guild ID:** `1432062710585098253`
+**IDs (Supabase, Discord):** Ver `../../constants.md`
 
 ---
 
