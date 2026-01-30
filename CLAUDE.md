@@ -48,7 +48,7 @@ bot/
 - Shared Package: `@jomavicuna/todo-shared` (GitHub Packages)
 - Deploy: GitHub Actions → ghcr.io → Home Assistant
 
-**IDs (Supabase, Discord):** Ver `../../constants.md`
+**IDs (Supabase, Discord):** Ver `../constants.md`
 
 ---
 
@@ -63,7 +63,7 @@ cd /Users/vicuna/sv/todo/discord/bot/todo-discord-bot
 ### 2. Bump de versión (IMPORTANTE)
 Editar `todo-discord-bot/config.yaml`:
 ```yaml
-version: "1.10.2"  # Incrementar versión (actual: 1.10.2)
+version: "1.10.3"  # Incrementar versión (actual: 1.10.3)
 ```
 
 El CI extrae la versión automáticamente de `config.yaml`, no necesitas editar `deploy.yml`.
@@ -161,10 +161,7 @@ Supabase (columna) → Tipos (opcional) → Query → Display → Deploy
 
 **Repo separado:** Este bot está en `jomavicuna/todo-discord-bot`.
 
-**Shared Package:** Usa `@jomavicuna/todo-shared` para tipos y utilidades compartidas:
-- Tipos: `User`, `Todo`, `TodoWithUser`, `TodoThread`, `Client`, `Project`
-- Utilidades: `formatDate()`, `isOverdue()`, `isToday()`, `getRelativeDate()`
-- Discord API: `createThread()`, `postMessage()`, `sendEmbed()`
+**Shared Package:** `@jomavicuna/todo-shared` - Ver contenido en `../CLAUDE.md` sección Shared Packages.
 
 Cuando modifiques el schema de Supabase:
 1. Actualizar tipos en `@jomavicuna/todo-shared` (publicar nueva versión)
@@ -232,6 +229,31 @@ Configuradas en Home Assistant Add-on → Configuration:
 - `discord_token`: Token del bot Discord
 - `supabase_url`: URL del proyecto Supabase
 - `supabase_anon_key`: Anon key de Supabase
+
+## Thread Tracking
+
+El bot trackea actividad en threads de Discord para mostrar información actualizada.
+
+### Cache
+- **TTL:** 5 minutos
+- **Funciones:**
+  - `loadThreadCache()` - Carga threads desde Supabase al iniciar
+  - `isThreadTracked(threadId)` - Verifica si un thread está en cache
+  - `updateThreadActivity(threadId, discordUserId)` - Actualiza actividad
+
+### Campos Trackeados
+| Campo | Descripción |
+|-------|-------------|
+| `last_activity_at` | Timestamp del último mensaje |
+| `last_message_by_discord_id` | ID de Discord del último usuario que escribió |
+
+### Flujo
+1. Bot detecta mensaje en thread trackeado
+2. Verifica cache (`isThreadTracked`)
+3. Si existe, actualiza `last_activity_at` y `last_message_by_discord_id` en Supabase
+4. Cache se refresca cada 5 minutos
+
+---
 
 ## Links
 - Repo: https://github.com/jomavicuna/todo-discord-bot
